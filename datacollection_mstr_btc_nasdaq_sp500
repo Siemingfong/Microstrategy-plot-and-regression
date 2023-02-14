@@ -1,0 +1,46 @@
+import yfinance as yf
+import pandas as pd
+from datetime import datetime
+
+# Get data for MSTR, NASDAQ, and BTC
+mstr = yf.Ticker("MSTR")
+btc = yf.Ticker("BTC-USD")
+nasdaq = yf.Ticker("^IXIC")
+sp500 = yf.Ticker("^GSPC")
+
+# Get historical data for each symbol
+mstr_history = mstr.history(start="2020-08-10", end=None)
+btc_history = btc.history(start="2020-08-10", end=None)
+nasdaq_history = nasdaq.history(start="2020-08-10", end=None)
+sp500_history = sp500.history(start="2020-08-10", end=None)
+
+# convert the string column to a datetime column
+mstr_history.index = mstr_history.index.date
+btc_history.index = btc_history.index.date
+nasdaq_history.index = nasdaq_history.index.date
+sp500_history.index = sp500_history.index.date
+
+# Filter only the close price
+mstr_history = mstr_history['Close']
+btc_history = btc_history['Close']
+nasdaq_history = nasdaq_history['Close']
+sp500_history = sp500_history['Close']
+
+# Merge dataframes
+merged = pd.concat([mstr_history, btc_history, nasdaq_history, sp500_history], axis=1)
+
+# Drop any rows with missing or invalid values
+merged.dropna(inplace=True)
+
+# Rename
+merged.columns = ["MSTR", "BTC", "NASDAQ", "S&P500"]
+
+# 計算股價變化的百分比
+merged['MSTR_price_change_pct'] = merged['MSTR'].pct_change()
+merged['BTC_price_change_pct'] = merged['BTC'].pct_change()
+merged['NASDAQ_price_change_pct'] = merged['NASDAQ'].pct_change()
+merged['S&P500_price_change_pct'] = merged['S&P500'].pct_change()
+
+# Save merged data to CSV
+merged.head()
+merged.to_csv("mstr-btc-nasdaq-sp500.csv")
