@@ -1,0 +1,32 @@
+import yfinance as yf
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Get the stock information for MSTR, BTC and NASDAQ
+mstr = yf.Ticker("MSTR")
+btc = yf.Ticker("BTC-USD")
+nasdaq = yf.Ticker("^IXIC")
+
+# Get the historical price data for MSTR, BTC and NASDAQ from 2020 to present
+mstr_history = mstr.history(start="2020-01-01")
+btc_history = btc.history(start="2020-01-01")
+nasdaq_history = nasdaq.history(start="2020-01-01")
+
+# Convert the data to pandas dataframes
+df_mstr = pd.DataFrame(mstr_history)
+df_btc = pd.DataFrame(btc_history)
+df_nasdaq = pd.DataFrame(nasdaq_history)
+
+# Plot the close price history of MSTR, BTC and NASDAQ
+plt.plot(df_mstr['Close'], label='MSTR')
+plt.plot(df_btc['Close'], label='BTC')
+plt.plot(df_nasdaq['Close'], label='NASDAQ')
+
+# Add labels, title and legend
+plt.xlabel('Time')
+plt.ylabel('Price')
+plt.title('MSTR vs BTC vs NASDAQ Price Change from 2020 to present')
+plt.legend()
+
+# Show the plot
+plt.show()
