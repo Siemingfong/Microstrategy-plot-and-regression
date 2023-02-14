@@ -1,0 +1,32 @@
+import yfinance as yf
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+# Get NASDAQ and MicroStrategy (MSTR) data from 2020 to the present
+nasdaq = yf.download("^IXIC", start="2020-01-01", end="2023-01-31")
+mstr = yf.download("MSTR", start="2020-01-01", end="2023-01-31")
+
+# Use NASDAQ stock price as the independent variable (x) and MicroStrategy (MSTR) stock price as the dependent variable (y)
+x = nasdaq['Close'].values.reshape(-1, 1)
+y = mstr['Close'].values.reshape(-1, 1)
+
+# Split data into training and testing sets
+train_size = int(0.8 * nasdaq.shape[0])
+x_train, x_test = x[:train_size], x[train_size:]
+y_train, y_test = y[:train_size], y[train_size:]
+
+# Fit the LinearRegression model on the training data
+reg = LinearRegression().fit(x_train, y_train)
+
+# Predict MicroStrategy (MSTR) stock prices on the test data
+y_pred = reg.predict(x_train)
+
+# Plot the results
+plt.scatter(x_train, y_train, color='blue')
+plt.plot(x_train, y_pred, color='red', linewidth=2)
+plt.xlabel('NASDAQ Stock Price')
+plt.ylabel('MicroStrategy (MSTR) Stock Price')
+plt.title('MicroStrategy (MSTR) Stock Price Prediction using NASDAQ Stock Price as Independent Variable')
+plt.show()
