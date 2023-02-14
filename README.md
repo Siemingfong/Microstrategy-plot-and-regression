@@ -1,2 +1,3 @@
 # Microstrategy-plot-and-regression
-Using yfiance and python  to draw microstrategy stock price 
+Using yfiance and python to draw microstrategy, nasdaq, s&P500, BTC price and regression
+
