@@ -1,0 +1,49 @@
+import yfinance as yf
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+# Get BTC and MicroStrategy (MSTR) data from 2020 to the present
+mstr = yf.download("MSTR", start="2020-01-01", end="2023-01-31")
+btc = yf.download("BTC-USD", start="2020-01-01", end="2023-01-31")
+
+# convert the string column to a datetime column
+mstr.index = mstr.index.date
+btc.index = btc.index.date
+
+# Filter only the close price
+mstr = mstr['Close']
+btc = btc['Close']
+
+# Merge dataframes
+df = pd.concat([mstr, btc], axis=1)
+
+# Drop any rows with missing or invalid values
+df.dropna(inplace=True)
+
+# Rename
+df.columns = ["MSTR", "BTC"]
+
+# Use BTC price as the independent variable (x) and MicroStrategy (MSTR) stock price as the dependent variable (y)
+x = df["BTC"].values.reshape(-1, 1)
+y = df["MSTR"].values.reshape(-1, 1)
+
+# Split data into training and testing sets
+train_size = int(0.8 * df.shape[0])
+x_train, x_test = x[:train_size], x[train_size:]
+y_train, y_test = y[:train_size], y[train_size:]
+
+# Fit the LinearRegression model on the training data
+reg = LinearRegression().fit(x_train, y_train)
+
+# Predict MicroStrategy (MSTR) stock prices on the test data
+y_pred = reg.predict(x_train)
+
+# Plot the results
+plt.scatter(x_train, y_train, color='blue')
+plt.plot(x_train, y_pred, color='red', linewidth=2)
+plt.xlabel('BTC Price')
+plt.ylabel('MicroStrategy (MSTR) Stock Price')
+plt.title('MicroStrategy (MSTR) Stock Price Prediction using BTC Price as Independent Variable')
+plt.show()
